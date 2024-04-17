@@ -23,4 +23,21 @@
         tools:layout_editor_absoluteX="1dp"
         tools:layout_editor_absoluteY="49dp" />
 
+    <com.tbuonomo.viewpagerdotsindicator.SpringDotsIndicator
+        android:id="@+id/spring_dots_indicator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        app:dampingRatio="0.75"
+        app:dotsColor="@color/white"
+        app:dotsCornerRadius="8dp"
+        app:dotsSize="16dp"
+        app:dotsSpacing="6dp"
+        app:dotsStrokeColor="@color/black"
+        app:dotsStrokeWidth="2dp"
+        app:layout_constraintBottom_toBottomOf="@+id/viewpager"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:stiffness="300" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

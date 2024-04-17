@@ -5,6 +5,8 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import android.os.Bundle;
 
+import com.tbuonomo.viewpagerdotsindicator.SpringDotsIndicator;
+
 //ver 01 simple, static
 //ver 02 multiple layout xmls
 //ver 03 simple layout, callback
@@ -27,5 +29,8 @@ public class MainActivity extends AppCompatActivity {
 
         viewPager2 = findViewById(R.id.viewpager);
         viewPager2.setAdapter(new MyViewPager2Adapter(cv_pages));
+
+        SpringDotsIndicator springDotsIndicator = (SpringDotsIndicator) findViewById(R.id.spring_dots_indicator);
+        springDotsIndicator.setViewPager2(viewPager2);
     }
 }
