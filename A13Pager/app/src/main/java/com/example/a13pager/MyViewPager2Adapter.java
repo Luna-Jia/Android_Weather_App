@@ -49,12 +49,37 @@ public class MyViewPager2Adapter extends RecyclerView.Adapter<MyViewPager2Adapte
         TextView cv_city;
         TextView cv_cond;
         ConstraintLayout constraintlayout;
+        TextView cv_weatherIcon;
+        TextView cv_temperatureTextView;
+        TextView cv_highTemperatureTextView;
+        TextView cv_lowTemperatureTextView;
+        TextView cv_nextDay1TextView;
+        TextView cv_nextDay2TextView;
+        TextView cv_nextDay3TextView;
+        TextView cv_nextDay1WeatherIconTextView;
+        TextView cv_nextDay2WeatherIconTextView;
+        TextView cv_nextDay3WeatherIconTextView;
+        TextView cv_switchDegreeTextView;
+
+
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
-            cv_city = itemView.findViewById(R.id.vv_tvCity);
-            cv_cond = itemView.findViewById(R.id.vv_tvCond);
-            constraintlayout = itemView.findViewById(R.id.constraintlayout);
+            cv_city = itemView.findViewById(R.id.weatherLocation);
+            cv_cond = itemView.findViewById(R.id.weatherDescription);
+            constraintlayout = itemView.findViewById(R.id.relativeLayout);
+            cv_weatherIcon = itemView.findViewById(R.id.weatherIcon);
+            cv_temperatureTextView = itemView.findViewById(R.id.temperatureTextView);
+            cv_highTemperatureTextView = itemView.findViewById(R.id.highTemperatureTextView);
+            cv_lowTemperatureTextView = itemView.findViewById(R.id.lowTemperatureTextView);
+            cv_nextDay1TextView = itemView.findViewById(R.id.nextDay1TextView);
+            cv_nextDay2TextView = itemView.findViewById(R.id.nextDay2TextView);
+            cv_nextDay3TextView = itemView.findViewById(R.id.nextDay3TextView);
+            cv_nextDay1WeatherIconTextView = itemView.findViewById(R.id.nextDay1WeatherIconTextView);
+            cv_nextDay2WeatherIconTextView = itemView.findViewById(R.id.nextDay2WeatherIconTextView);
+            cv_nextDay3WeatherIconTextView = itemView.findViewById(R.id.nextDay3WeatherIconTextView);
+            cv_switchDegreeTextView = itemView.findViewById(R.id.switchDegreeTextView);
+
         }
     }
 }

@@ -17,8 +17,11 @@ public class MainActivity extends AppCompatActivity {
     // https://www.journaldev.com/26148/android-viewpager2
     private MyModel[] cv_pages = {
             new MyModel("Ann Arbor", "Clear", android.R.color.holo_orange_light),
-            new MyModel("Detroit", "Cloud", android.R.color.holo_green_light),
-            new MyModel("Chicago", "Rain", android.R.color.holo_blue_light)
+            new MyModel("Yuma", "Cloud", android.R.color.holo_green_light),
+            new MyModel("Orlando", "Rain", android.R.color.holo_blue_light),
+            new MyModel("Ypsilanti","Rain", android.R.color.holo_blue_light),
+            new MyModel("Fort Wainwright","Rain", android.R.color.holo_blue_light),
+
     };
     private ViewPager2 viewPager2;
 

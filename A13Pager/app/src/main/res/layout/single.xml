@@ -1,35 +1,274 @@
-<?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/constraintlayout"
+    android:id="@+id/relativeLayout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#4865FE">
 
+
+    <!-- Today's weather icon. Weather Icon using the Climacons font -->
     <TextView
-        android:id="@+id/vv_tvCity"
+
+        android:id="@+id/weatherIcon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="112dp"
-        android:text="TextView"
-        android:textSize="24sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
+        android:fontFamily="@font/climacons"
+        android:text="\u0021"
+        android:textColor="#FFFFFF"
+        android:textSize="250sp"
+        android:textAlignment="center"
+        app:layout_constraintBottom_toTopOf="@+id/weatherDescription"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
+    </TextView>
+
+
+    <!-- today's Weather Description -->
     <TextView
-        android:id="@+id/vv_tvCond"
+        android:id="@+id/weatherDescription"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="TextView"
-        android:textSize="96sp"
+        android:fontFamily="sans-serif-thin"
+        android:text="Clouds"
+
+        android:textColor="#FFFFFF"
+        android:textSize="60sp"
+        android:textAlignment="center"
+        app:layout_constraintBottom_toTopOf="@+id/weatherLocation"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/weatherIcon" />
+
+    <!-- Location -->
+    <TextView
+        android:id="@+id/weatherLocation"
+        android:layout_width="wrap_content"
+        android:layout_height="31dp"
+
+        android:fontFamily="sans-serif-light"
+        android:text="Ann Arbor"
+        android:textColor="#FFFFFF"
+        android:textSize="23sp"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/weatherDescription" />
+
+    <!-- 大长条 -->
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="10dp"
+        android:background="#091243"
+        android:layout_marginBottom="200dp"
+        android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.5" />
+        app:layout_constraintTop_toBottomOf="@+id/weatherLocation">
 
+        <!-- 4列-1 -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="5dp"
+            android:orientation="vertical">
+
+
+            <!-- current temperature -->
+            <TextView
+                android:id="@+id/temperatureTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-thin"
+                android:text="61°"
+                android:textAlignment="center"
+                android:textColor="#FFFFFF"
+                android:textSize="50sp" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <!-- Today's highest temperature -->
+                <TextView
+                    android:id="@+id/highTemperatureTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-thin"
+                    android:text="H 62"
+                    android:textColor="#FFFFFF"
+                    android:textSize="18dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-thin"
+                    android:text="    "
+                    android:textColor="#FFFFFF"
+                    android:textSize="18dp" />
+
+                <!-- Today's lowest temperature -->
+                <TextView
+                    android:id="@+id/lowTemperatureTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-thin"
+                    android:text="L 59"
+                    android:textColor="#FFFFFF"
+                    android:textSize="18dp" />
+
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+        <!-- 4列-2 -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="65dp"
+            android:layout_marginTop="5dp"
+            android:orientation="vertical">
+
+            <!-- Tomorrow, show correct weekday -->
+            <TextView
+                android:id="@+id/nextDay1TextView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="10dp"
+                android:fontFamily="sans-serif-thin"
+                android:text="Sun"
+                android:textAlignment="center"
+                android:textColor="#FFFFFF"
+                android:textSize="25dp" />
+
+            <!-- the second day weather icon -->
+            <TextView
+                android:id="@+id/nextDay1WeatherIconTextView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="2dp"
+                android:fontFamily="@font/climacons"
+                android:text="\u0024"
+                android:textAlignment="center"
+                android:textColor="#FFFFFF"
+                android:textSize="40dp" />
+
+
+        </LinearLayout>
+
+        <!-- 4列-3 -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="30dp"
+            android:layout_marginTop="5dp"
+            android:orientation="vertical">
+
+            <!-- the day after tomorrow -->
+            <TextView
+                android:id="@+id/nextDay2TextView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="10dp"
+                android:fontFamily="sans-serif-thin"
+                android:text="Mon"
+                android:textAlignment="center"
+                android:textColor="#FFFFFF"
+                android:textSize="25dp" />
+
+            <!-- weather icon for the day after tomorrow -->
+            <TextView
+                android:id="@+id/nextDay2WeatherIconTextView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="2dp"
+                android:fontFamily="@font/climacons"
+                android:text="\u0021"
+                android:textAlignment="center"
+                android:textColor="#FFFFFF"
+                android:textSize="40dp" />
+
+
+        </LinearLayout>
+
+        <!-- 4列-4 -->
+        <LinearLayout
+
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_marginRight="15dp"
+            android:orientation="vertical">
+
+            <!-- the Third day -->
+            <TextView
+                android:id="@+id/nextDay3TextView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="10dp"
+                android:fontFamily="sans-serif-thin"
+
+                android:text="Tue"
+                android:textAlignment="center"
+                android:textColor="#FFFFFF"
+                android:textSize="25dp" />
+
+            <!-- weather icon for the third day -->
+            <TextView
+                android:id="@+id/nextDay3WeatherIconTextView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="2dp"
+                android:fontFamily="@font/climacons"
+                android:text="\u0024"
+                android:textAlignment="center"
+                android:textColor="#FFFFFF"
+                android:textSize="40dp" />
+
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/switchDegreeTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="126dp"
+        android:layout_marginEnd="368dp"
+        android:layout_marginBottom="16dp"
+        android:text="F"
+        android:textColor="@android:color/white"
+        android:textSize="40sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout"
+        app:layout_constraintVertical_bias="0.736" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="64dp"
+        android:layout_marginRight="16dp"
+
+        android:text="+"
+        android:textColor="@android:color/white"
+        android:textSize="48sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.953"
+        app:layout_constraintStart_toEndOf="@+id/textView2"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout"
+        app:layout_constraintVertical_bias="0.855" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
