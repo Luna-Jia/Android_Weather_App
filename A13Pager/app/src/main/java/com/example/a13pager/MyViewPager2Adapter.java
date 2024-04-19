@@ -8,6 +8,9 @@ import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
 public class MyViewPager2Adapter extends RecyclerView.Adapter<MyViewPager2Adapter.MyViewHolder>  {
     // Constructor of our ViewPager2Adapter class
     private MyModel[] cv_models;
@@ -31,6 +34,19 @@ public class MyViewPager2Adapter extends RecyclerView.Adapter<MyViewPager2Adapte
         holder.cv_city.setText(cv_models[position].mf_getCity());
         holder.cv_cond.setText(cv_models[position].mf_getCond());
         holder.constraintlayout.setBackgroundResource(cv_models[position].mf_getColor());
+
+        // Set the next three days' names
+        Calendar calendar = Calendar.getInstance();
+        SimpleDateFormat dayFormat = new SimpleDateFormat("E"); // "E" for the short name of the day
+
+        calendar.add(Calendar.DATE, 1);
+        holder.cv_nextDay1TextView.setText(dayFormat.format(calendar.getTime()));
+
+        calendar.add(Calendar.DATE, 1);
+        holder.cv_nextDay2TextView.setText(dayFormat.format(calendar.getTime()));
+
+        calendar.add(Calendar.DATE, 1);
+        holder.cv_nextDay3TextView.setText(dayFormat.format(calendar.getTime()));
     }
 
     //@Override
@@ -83,3 +99,4 @@ public class MyViewPager2Adapter extends RecyclerView.Adapter<MyViewPager2Adapte
         }
     }
 }
+// on click F

@@ -37,3 +37,5 @@ public class MainActivity extends AppCompatActivity {
         springDotsIndicator.setViewPager2(viewPager2);
     }
 }
+
+// jaso, 
