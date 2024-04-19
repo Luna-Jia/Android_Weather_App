@@ -59,7 +59,7 @@ public class MyViewPager2Adapter extends RecyclerView.Adapter<MyViewPager2Adapte
             properties.load(inputStream);
             String apiKey = properties.getProperty("api_key");
 
-            fetchCityName(zipCode, apiKey, holder.cv_city, holder.cv_cond);
+            fetchCityName(zipCode, apiKey, holder.cv_city, holder.cv_cond,holder.cv_temperatureTextView);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -68,6 +68,7 @@ public class MyViewPager2Adapter extends RecyclerView.Adapter<MyViewPager2Adapte
         holder.cv_city.setText(cv_models[position].mf_getCity());
         holder.cv_cond.setText(cv_models[position].mf_getCond());
         holder.constraintlayout.setBackgroundResource(cv_models[position].mf_getColor());
+        holder.cv_temperatureTextView.setText(cv_models[position].mf_getCurrentTemp());
 
         // Set the next three days' names
         Calendar calendar = Calendar.getInstance();
@@ -83,7 +84,7 @@ public class MyViewPager2Adapter extends RecyclerView.Adapter<MyViewPager2Adapte
         holder.cv_nextDay3TextView.setText(dayFormat.format(calendar.getTime()));
     }
 
-    private void fetchCityName(String zipCode, String apiKey, TextView CityTextView, TextView descriptionTextView) {
+    private void fetchCityName(String zipCode, String apiKey, TextView CityTextView, TextView descriptionTextView, TextView temperatureTextView) {
         String apiUrl = "https://api.openweathermap.org/geo/1.0/zip?zip=" + zipCode + "&limit=5&appid=" + apiKey;
 
         OkHttpClient client = new OkHttpClient();
@@ -111,7 +112,7 @@ public class MyViewPager2Adapter extends RecyclerView.Adapter<MyViewPager2Adapte
                         Log.d("CityName", "Fetched City: " + cityName);
                         Log.d("APIResponse", "Response JSON: " + responseJson);
 
-                        fetchWeatherDescription(latitude, longitude, apiKey, descriptionTextView);
+                        fetchWeatherDescription(latitude, longitude, apiKey, descriptionTextView,temperatureTextView);
 
                         ((Activity) context).runOnUiThread(() -> CityTextView.setText(cityName));
                     } catch (JSONException e) {
@@ -123,8 +124,8 @@ public class MyViewPager2Adapter extends RecyclerView.Adapter<MyViewPager2Adapte
         });
     }
 
-    private void fetchWeatherDescription(double latitude, double longitude, String apiKey, TextView descriptionTextView) {
-        String apiUrl = "https://api.openweathermap.org/data/3.0/onecall?lat=" + latitude + "&lon=" + longitude + "&appid=" + apiKey + "&exclude=minutely,hourly";
+    private void fetchWeatherDescription(double latitude, double longitude, String apiKey, TextView descriptionTextView, TextView temperatureTextView) {
+        String apiUrl = "https://api.openweathermap.org/data/3.0/onecall?lat=" + latitude + "&lon=" + longitude + "&appid=" + apiKey + "&units=metric" + "&exclude=minutely,hourly";
 
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()
@@ -151,8 +152,13 @@ public class MyViewPager2Adapter extends RecyclerView.Adapter<MyViewPager2Adapte
                         JSONArray weatherArray = currentWeather.getJSONArray("weather");
                         JSONObject weatherObject = weatherArray.getJSONObject(0);
                         String description = weatherObject.getString("description");
+                        double temperature = currentWeather.getDouble("temp");
 
-                        ((Activity) context).runOnUiThread(() -> descriptionTextView.setText(description));
+                        ((Activity) context).runOnUiThread(() -> {
+                            descriptionTextView.setText(description);
+                            temperatureTextView.setText(String.format("%d°C", Math.round(temperature)));
+
+                        });
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
