@@ -1,6 +1,7 @@
 package com.example.a13pager;
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -59,7 +60,7 @@ public class MyViewPager2Adapter extends RecyclerView.Adapter<MyViewPager2Adapte
             properties.load(inputStream);
             String apiKey = properties.getProperty("api_key");
 
-            fetchCityName(zipCode, apiKey, holder.cv_city, holder.cv_cond,holder.cv_temperatureTextView, holder.cv_highTemperatureTextView,holder.cv_lowTemperatureTextView);
+            fetchCityName(zipCode, apiKey, holder.cv_city, holder.cv_cond,holder.cv_temperatureTextView, holder.cv_highTemperatureTextView,holder.cv_lowTemperatureTextView, holder.constraintlayout);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -86,7 +87,7 @@ public class MyViewPager2Adapter extends RecyclerView.Adapter<MyViewPager2Adapte
         holder.cv_nextDay3TextView.setText(dayFormat.format(calendar.getTime()));
     }
 
-    private void fetchCityName(String zipCode, String apiKey, TextView CityTextView, TextView descriptionTextView, TextView temperatureTextView, TextView highTemperatureTextView, TextView lowTemperatureTextView) {
+    private void fetchCityName(String zipCode, String apiKey, TextView CityTextView, TextView descriptionTextView, TextView temperatureTextView, TextView highTemperatureTextView, TextView lowTemperatureTextView, ConstraintLayout constraintlayout) {
         String apiUrl = "https://api.openweathermap.org/geo/1.0/zip?zip=" + zipCode + "&limit=5&appid=" + apiKey;
 
         OkHttpClient client = new OkHttpClient();
@@ -114,7 +115,7 @@ public class MyViewPager2Adapter extends RecyclerView.Adapter<MyViewPager2Adapte
                         Log.d("CityName", "Fetched City: " + cityName);
                         Log.d("APIResponse", "Response JSON: " + responseJson);
 
-                        fetchWeatherDescription(latitude, longitude, apiKey, descriptionTextView,temperatureTextView, highTemperatureTextView,lowTemperatureTextView);
+                        fetchWeatherDescription(latitude, longitude, apiKey, descriptionTextView,temperatureTextView, highTemperatureTextView,lowTemperatureTextView, constraintlayout);
 
                         ((Activity) context).runOnUiThread(() -> CityTextView.setText(cityName));
                     } catch (JSONException e) {
@@ -126,7 +127,7 @@ public class MyViewPager2Adapter extends RecyclerView.Adapter<MyViewPager2Adapte
         });
     }
 
-    private void fetchWeatherDescription(double latitude, double longitude, String apiKey, TextView descriptionTextView, TextView temperatureTextView, TextView highTemperatureTextView, TextView lowTemperatureTextView) {
+    private void fetchWeatherDescription(double latitude, double longitude, String apiKey, TextView descriptionTextView, TextView temperatureTextView, TextView highTemperatureTextView, TextView lowTemperatureTextView, ConstraintLayout constraintlayout) {
         String apiUrl = "https://api.openweathermap.org/data/3.0/onecall?lat=" + latitude + "&lon=" + longitude + "&appid=" + apiKey + "&units=metric" + "&exclude=minutely,hourly";
 
         OkHttpClient client = new OkHttpClient();
@@ -167,6 +168,7 @@ public class MyViewPager2Adapter extends RecyclerView.Adapter<MyViewPager2Adapte
                             temperatureTextView.setText(String.format("%d°C", Math.round(temperature)));
                             highTemperatureTextView.setText(String.format("H %d°", Math.round(maxTemp)));
                             lowTemperatureTextView.setText(String.format("L %d°", Math.round(minTemp)));
+                            updateBackgroundColor(temperature, constraintlayout);
 
                         });
                     } catch (JSONException e) {
@@ -175,6 +177,22 @@ public class MyViewPager2Adapter extends RecyclerView.Adapter<MyViewPager2Adapte
                 }
             }
         });
+    }
+
+    private void updateBackgroundColor(double temperature, ConstraintLayout layout) {
+        // Define the temperature range and corresponding colors
+        double minTemp = -10.0;
+        double maxTemp = 40.0;
+        int coldColor = Color.BLUE;
+        int hotColor = Color.RED;
+
+        // Calculate the color based on the temperature
+        double ratio = (temperature - minTemp) / (maxTemp - minTemp);
+        ratio = Math.max(0, Math.min(ratio, 1)); // Clamp the ratio between 0 and 1
+        int color = (int) (ratio * (hotColor - coldColor)) + coldColor;
+
+        // Set the background color
+        layout.setBackgroundColor(color);
     }
 
 
