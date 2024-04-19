@@ -1,4 +1,6 @@
 package com.example.a13pager;
+import android.app.Activity;
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,14 +10,27 @@ import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Properties;
+
+import okhttp3.Call;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Callback;
+import okhttp3.Response;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class MyViewPager2Adapter extends RecyclerView.Adapter<MyViewPager2Adapter.MyViewHolder>  {
     // Constructor of our ViewPager2Adapter class
     private MyModel[] cv_models;
-    MyViewPager2Adapter(MyModel[] models) {
+    private Context context;
+    MyViewPager2Adapter(MyModel[] models,Context context) {
         this.cv_models = models;
+        this.context = context;
     }
 
     // This method returns our layout
@@ -30,6 +45,20 @@ public class MyViewPager2Adapter extends RecyclerView.Adapter<MyViewPager2Adapte
     // This method binds the screen with the view
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
+        String zipCode = cv_models[position].mf_getZipCode();
+
+        // Read API key from config.properties file
+        Properties properties = new Properties();
+        try {
+            InputStream inputStream = context.getResources().openRawResource(R.raw.config);
+            properties.load(inputStream);
+            String apiKey = properties.getProperty("api_key");
+
+            fetchCityName(zipCode, apiKey, holder.cv_city);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         //// HERE
         holder.cv_city.setText(cv_models[position].mf_getCity());
         holder.cv_cond.setText(cv_models[position].mf_getCond());
@@ -48,6 +77,39 @@ public class MyViewPager2Adapter extends RecyclerView.Adapter<MyViewPager2Adapte
         calendar.add(Calendar.DATE, 1);
         holder.cv_nextDay3TextView.setText(dayFormat.format(calendar.getTime()));
     }
+
+    private void fetchCityName(String zipCode, String apiKey, TextView textView) {
+        String apiUrl = "http://api.openweathermap.org/geo/1.0/zip?zip=" + zipCode + "&limit=5&appid=" + apiKey;
+
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder()
+                .url(apiUrl)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    String responseJson = response.body().string();
+                    try {
+                        JSONObject jsonObject = new JSONObject(responseJson);
+                        String cityName = jsonObject.getString("name");
+                        ((Activity) context).runOnUiThread(() -> textView.setText(cityName));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+
+    }
+
+
 
     //@Override
     //public int getItemViewType(int position) {

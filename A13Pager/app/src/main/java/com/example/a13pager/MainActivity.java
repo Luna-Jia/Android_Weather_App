@@ -16,12 +16,11 @@ import com.tbuonomo.viewpagerdotsindicator.SpringDotsIndicator;
 public class MainActivity extends AppCompatActivity {
     // https://www.journaldev.com/26148/android-viewpager2
     private MyModel[] cv_pages = {
-            new MyModel("Ann Arbor", "Clear", android.R.color.holo_orange_light),
-            new MyModel("Yuma", "Cloud", android.R.color.holo_green_light),
-            new MyModel("Orlando", "Rain", android.R.color.holo_blue_light),
-            new MyModel("Ypsilanti","Rain", android.R.color.holo_blue_light),
-            new MyModel("Fort Wainwright","Rain", android.R.color.holo_blue_light),
-
+            new MyModel("Ann Arbor", "Clear", android.R.color.holo_orange_light,"48195"),
+            new MyModel("Yuma", "Cloud", android.R.color.holo_green_light,"85364"),
+            new MyModel("Orlando", "Rain", android.R.color.holo_blue_light,"32801"),
+            new MyModel("Ypsilanti","Rain", android.R.color.holo_blue_light,"48197"),
+            new MyModel("Fort Wainwright","Rain", android.R.color.holo_blue_light,"99703"),
     };
     private ViewPager2 viewPager2;
 
@@ -31,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         viewPager2 = findViewById(R.id.viewpager);
-        viewPager2.setAdapter(new MyViewPager2Adapter(cv_pages));
+        viewPager2.setAdapter(new MyViewPager2Adapter(cv_pages,this));
 
         SpringDotsIndicator springDotsIndicator = (SpringDotsIndicator) findViewById(R.id.spring_dots_indicator);
         springDotsIndicator.setViewPager2(viewPager2);
