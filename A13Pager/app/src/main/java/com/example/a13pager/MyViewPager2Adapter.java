@@ -34,6 +34,9 @@ public class MyViewPager2Adapter extends RecyclerView.Adapter<MyViewPager2Adapte
     // Constructor of our ViewPager2Adapter class
     private MyModel[] cv_models;
     private Context context;
+    private boolean isCelsius = true;
+
+
     MyViewPager2Adapter(MyModel[] models,Context context) {
         this.cv_models = models;
         this.context = context;
@@ -72,6 +75,20 @@ public class MyViewPager2Adapter extends RecyclerView.Adapter<MyViewPager2Adapte
         holder.cv_temperatureTextView.setText(cv_models[position].mf_getCurrentTemp());
         holder.cv_highTemperatureTextView.setText(cv_models[position].mf_getHighTemp());
         holder.cv_lowTemperatureTextView.setText((cv_models[position].mf_getLowTemp()));
+        holder.cv_switchDegreeTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("SwitchDegree", "Clicked on switchDegreeTextView");
+//                ((Activity) context).runOnUiThread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        Toast.makeText(context, "Clicked on switchDegreeTextView", Toast.LENGTH_SHORT).show();
+//                    }
+//                });
+                toggleTemperatureUnit(holder.cv_temperatureTextView, holder.cv_highTemperatureTextView, holder.cv_lowTemperatureTextView, holder.cv_switchDegreeTextView);
+            }
+        });
+
 
         // Set the next three days' names
         Calendar calendar = Calendar.getInstance();
@@ -165,10 +182,22 @@ public class MyViewPager2Adapter extends RecyclerView.Adapter<MyViewPager2Adapte
 
                         ((Activity) context).runOnUiThread(() -> {
                             descriptionTextView.setText(description);
-                            temperatureTextView.setText(String.format("%d°C", Math.round(temperature)));
-                            highTemperatureTextView.setText(String.format("H %d°", Math.round(maxTemp)));
-                            lowTemperatureTextView.setText(String.format("L %d°", Math.round(minTemp)));
-                            updateBackgroundColor(temperature, constraintlayout);
+
+                            if (isCelsius) {
+                                temperatureTextView.setText(String.format("%d°C", Math.round(temperature)));
+                                highTemperatureTextView.setText(String.format("H %d°C", Math.round(maxTemp)));
+                                lowTemperatureTextView.setText(String.format("L %d°C", Math.round(minTemp)));
+                                updateBackgroundColor(temperature, constraintlayout);
+                            } else {
+                                double temperatureF = (temperature * 9 / 5) + 32;
+                                double maxTempF = (maxTemp * 9 / 5) + 32;
+                                double minTempF = (minTemp * 9 / 5) + 32;
+
+                                temperatureTextView.setText(String.format("%d°F", Math.round(temperatureF)));
+                                highTemperatureTextView.setText(String.format("H %d°F", Math.round(maxTempF)));
+                                lowTemperatureTextView.setText(String.format("L %d°F", Math.round(minTempF)));
+                                updateBackgroundColor(temperatureF, constraintlayout);
+                            }
 
                         });
                     } catch (JSONException e) {
@@ -181,8 +210,16 @@ public class MyViewPager2Adapter extends RecyclerView.Adapter<MyViewPager2Adapte
 
     private void updateBackgroundColor(double temperature, ConstraintLayout layout) {
         // Define the temperature range and corresponding colors
-        double minTemp = -10.0;
-        double maxTemp = 40.0;
+        double minTemp;
+        double maxTemp;
+        if (isCelsius) {
+            minTemp = -10.0;
+            maxTemp = 40.0;
+        } else {
+            minTemp = 14.0;
+            maxTemp = 104.0;
+        }
+
         int coldColor = Color.BLUE;
         int hotColor = Color.RED;
 
@@ -193,6 +230,66 @@ public class MyViewPager2Adapter extends RecyclerView.Adapter<MyViewPager2Adapte
 
         // Set the background color
         layout.setBackgroundColor(color);
+    }
+
+    private void toggleTemperatureUnit(TextView temperatureTextView, TextView highTemperatureTextView, TextView lowTemperatureTextView, TextView switchDegreeTextView) {
+        if (isCelsius) {
+            // Convert Celsius to Fahrenheit
+            try {
+                String temperatureC = temperatureTextView.getText().toString().replace("°C", "").trim();
+                String highTemperatureC = highTemperatureTextView.getText().toString().replace("H", "").replace("°C", "").trim();
+                String lowTemperatureC = lowTemperatureTextView.getText().toString().replace("L", "").replace("°C", "").trim();
+
+                String temperatureF = convertToFahrenheit(temperatureC);
+                String highTemperatureF = convertToFahrenheit(highTemperatureC);
+                String lowTemperatureF = convertToFahrenheit(lowTemperatureC);
+
+                temperatureTextView.setText(temperatureF + "°F");
+                highTemperatureTextView.setText("H " + highTemperatureF + "°F");
+                lowTemperatureTextView.setText("L " + lowTemperatureF + "°F");
+
+                switchDegreeTextView.setText("C"); // Change text to "C"
+
+                isCelsius = false;
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+                // Handle the parsing error, e.g., show an error message or use default values
+            }
+        } else {
+            // Convert Fahrenheit to Celsius
+            try {
+                String temperatureF = temperatureTextView.getText().toString().replace("°F", "").trim();
+                String highTemperatureF = highTemperatureTextView.getText().toString().replace("H", "").replace("°F", "").trim();
+                String lowTemperatureF = lowTemperatureTextView.getText().toString().replace("L", "").replace("°F", "").trim();
+
+                String temperatureC = convertToCelsius(temperatureF);
+                String highTemperatureC = convertToCelsius(highTemperatureF);
+                String lowTemperatureC = convertToCelsius(lowTemperatureF);
+
+                temperatureTextView.setText(temperatureC + "°C");
+                highTemperatureTextView.setText("H " + highTemperatureC + "°C");
+                lowTemperatureTextView.setText("L " + lowTemperatureC + "°C");
+
+                switchDegreeTextView.setText("F"); // Change text to "F"
+
+                isCelsius = true;
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+                // Handle the parsing error, e.g., show an error message or use default values
+            }
+        }
+    }
+
+    private String convertToFahrenheit(String celsius) {
+        double temperature = Double.parseDouble(celsius);
+        double fahrenheit = (temperature * 9 / 5) + 32;
+        return String.format("%.0f", fahrenheit);
+    }
+
+    private String convertToCelsius(String fahrenheit) {
+        double temperature = Double.parseDouble(fahrenheit);
+        double celsius = (temperature - 32) * 5 / 9;
+        return String.format("%.0f", celsius);
     }
 
 
