@@ -59,7 +59,7 @@ public class MyViewPager2Adapter extends RecyclerView.Adapter<MyViewPager2Adapte
             properties.load(inputStream);
             String apiKey = properties.getProperty("api_key");
 
-            fetchCityName(zipCode, apiKey, holder.cv_city, holder.cv_cond,holder.cv_temperatureTextView);
+            fetchCityName(zipCode, apiKey, holder.cv_city, holder.cv_cond,holder.cv_temperatureTextView, holder.cv_highTemperatureTextView,holder.cv_lowTemperatureTextView);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -69,6 +69,8 @@ public class MyViewPager2Adapter extends RecyclerView.Adapter<MyViewPager2Adapte
         holder.cv_cond.setText(cv_models[position].mf_getCond());
         holder.constraintlayout.setBackgroundResource(cv_models[position].mf_getColor());
         holder.cv_temperatureTextView.setText(cv_models[position].mf_getCurrentTemp());
+        holder.cv_highTemperatureTextView.setText(cv_models[position].mf_getHighTemp());
+        holder.cv_lowTemperatureTextView.setText((cv_models[position].mf_getLowTemp()));
 
         // Set the next three days' names
         Calendar calendar = Calendar.getInstance();
@@ -84,7 +86,7 @@ public class MyViewPager2Adapter extends RecyclerView.Adapter<MyViewPager2Adapte
         holder.cv_nextDay3TextView.setText(dayFormat.format(calendar.getTime()));
     }
 
-    private void fetchCityName(String zipCode, String apiKey, TextView CityTextView, TextView descriptionTextView, TextView temperatureTextView) {
+    private void fetchCityName(String zipCode, String apiKey, TextView CityTextView, TextView descriptionTextView, TextView temperatureTextView, TextView highTemperatureTextView, TextView lowTemperatureTextView) {
         String apiUrl = "https://api.openweathermap.org/geo/1.0/zip?zip=" + zipCode + "&limit=5&appid=" + apiKey;
 
         OkHttpClient client = new OkHttpClient();
@@ -112,7 +114,7 @@ public class MyViewPager2Adapter extends RecyclerView.Adapter<MyViewPager2Adapte
                         Log.d("CityName", "Fetched City: " + cityName);
                         Log.d("APIResponse", "Response JSON: " + responseJson);
 
-                        fetchWeatherDescription(latitude, longitude, apiKey, descriptionTextView,temperatureTextView);
+                        fetchWeatherDescription(latitude, longitude, apiKey, descriptionTextView,temperatureTextView, highTemperatureTextView,lowTemperatureTextView);
 
                         ((Activity) context).runOnUiThread(() -> CityTextView.setText(cityName));
                     } catch (JSONException e) {
@@ -124,7 +126,7 @@ public class MyViewPager2Adapter extends RecyclerView.Adapter<MyViewPager2Adapte
         });
     }
 
-    private void fetchWeatherDescription(double latitude, double longitude, String apiKey, TextView descriptionTextView, TextView temperatureTextView) {
+    private void fetchWeatherDescription(double latitude, double longitude, String apiKey, TextView descriptionTextView, TextView temperatureTextView, TextView highTemperatureTextView, TextView lowTemperatureTextView) {
         String apiUrl = "https://api.openweathermap.org/data/3.0/onecall?lat=" + latitude + "&lon=" + longitude + "&appid=" + apiKey + "&units=metric" + "&exclude=minutely,hourly";
 
         OkHttpClient client = new OkHttpClient();
@@ -154,9 +156,17 @@ public class MyViewPager2Adapter extends RecyclerView.Adapter<MyViewPager2Adapte
                         String description = weatherObject.getString("description");
                         double temperature = currentWeather.getDouble("temp");
 
+                        JSONArray dailyArray = jsonObject.getJSONArray("daily");
+                        JSONObject todayWeather = dailyArray.getJSONObject(0);
+                        JSONObject todayTemp = todayWeather.getJSONObject("temp");
+                        double maxTemp = todayTemp.getDouble("max");
+                        double minTemp = todayTemp.getDouble("min");
+
                         ((Activity) context).runOnUiThread(() -> {
                             descriptionTextView.setText(description);
                             temperatureTextView.setText(String.format("%d°C", Math.round(temperature)));
+                            highTemperatureTextView.setText(String.format("H %d°", Math.round(maxTemp)));
+                            lowTemperatureTextView.setText(String.format("L %d°", Math.round(minTemp)));
 
                         });
                     } catch (JSONException e) {

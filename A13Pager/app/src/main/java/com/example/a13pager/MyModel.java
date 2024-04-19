@@ -6,13 +6,17 @@ public class MyModel {
     int mv_color;
     String mv_zipCode;
     String mv_currentTemp;
+    String mv_highTemp;
+    String mv_lowTemp;
 
-    public MyModel(String city, String cond, int color, String zipCode, String tempNow) {
+    public MyModel(String city, String cond, int color, String zipCode, String tempNow, String highTemp, String lowTemp) {
         mv_city = city;
         mv_cond = cond;
         mv_color = color;
         mv_zipCode = zipCode;
         mv_currentTemp = tempNow;
+        mv_highTemp = highTemp;
+        mv_lowTemp = lowTemp;
 
     }
 
@@ -35,4 +39,6 @@ public class MyModel {
     public String mf_getCurrentTemp() {
         return mv_currentTemp;
     }
+    public String mf_getHighTemp() {return mv_highTemp;}
+    public String mf_getLowTemp() {return mv_lowTemp;}
 }
