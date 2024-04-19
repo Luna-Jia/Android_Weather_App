@@ -63,7 +63,7 @@ public class MyViewPager2Adapter extends RecyclerView.Adapter<MyViewPager2Adapte
             properties.load(inputStream);
             String apiKey = properties.getProperty("api_key");
 
-            fetchCityName(zipCode, apiKey, holder.cv_city, holder.cv_cond,holder.cv_temperatureTextView, holder.cv_highTemperatureTextView,holder.cv_lowTemperatureTextView, holder.constraintlayout);
+            fetchCityName(zipCode, apiKey, holder.cv_city, holder.cv_cond,holder.cv_temperatureTextView, holder.cv_highTemperatureTextView,holder.cv_lowTemperatureTextView, holder.constraintlayout, holder.cv_weatherIcon);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -75,6 +75,7 @@ public class MyViewPager2Adapter extends RecyclerView.Adapter<MyViewPager2Adapte
         holder.cv_temperatureTextView.setText(cv_models[position].mf_getCurrentTemp());
         holder.cv_highTemperatureTextView.setText(cv_models[position].mf_getHighTemp());
         holder.cv_lowTemperatureTextView.setText((cv_models[position].mf_getLowTemp()));
+        holder.cv_weatherIcon.setText((cv_models[position].mf_getWeatherIcon0()));
         holder.cv_switchDegreeTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -104,7 +105,7 @@ public class MyViewPager2Adapter extends RecyclerView.Adapter<MyViewPager2Adapte
         holder.cv_nextDay3TextView.setText(dayFormat.format(calendar.getTime()));
     }
 
-    private void fetchCityName(String zipCode, String apiKey, TextView CityTextView, TextView descriptionTextView, TextView temperatureTextView, TextView highTemperatureTextView, TextView lowTemperatureTextView, ConstraintLayout constraintlayout) {
+    private void fetchCityName(String zipCode, String apiKey, TextView CityTextView, TextView descriptionTextView, TextView temperatureTextView, TextView highTemperatureTextView, TextView lowTemperatureTextView, ConstraintLayout constraintlayout, TextView weatherIcon0) {
         String apiUrl = "https://api.openweathermap.org/geo/1.0/zip?zip=" + zipCode + "&limit=5&appid=" + apiKey;
 
         OkHttpClient client = new OkHttpClient();
@@ -132,7 +133,7 @@ public class MyViewPager2Adapter extends RecyclerView.Adapter<MyViewPager2Adapte
                         Log.d("CityName", "Fetched City: " + cityName);
                         Log.d("APIResponse", "Response JSON: " + responseJson);
 
-                        fetchWeatherDescription(latitude, longitude, apiKey, descriptionTextView,temperatureTextView, highTemperatureTextView,lowTemperatureTextView, constraintlayout);
+                        fetchWeatherDescription(latitude, longitude, apiKey, descriptionTextView,temperatureTextView, highTemperatureTextView,lowTemperatureTextView, constraintlayout,weatherIcon0);
 
                         ((Activity) context).runOnUiThread(() -> CityTextView.setText(cityName));
                     } catch (JSONException e) {
@@ -144,7 +145,7 @@ public class MyViewPager2Adapter extends RecyclerView.Adapter<MyViewPager2Adapte
         });
     }
 
-    private void fetchWeatherDescription(double latitude, double longitude, String apiKey, TextView descriptionTextView, TextView temperatureTextView, TextView highTemperatureTextView, TextView lowTemperatureTextView, ConstraintLayout constraintlayout) {
+    private void fetchWeatherDescription(double latitude, double longitude, String apiKey, TextView descriptionTextView, TextView temperatureTextView, TextView highTemperatureTextView, TextView lowTemperatureTextView, ConstraintLayout constraintlayout, TextView weatherIconTextView) {
         String apiUrl = "https://api.openweathermap.org/data/3.0/onecall?lat=" + latitude + "&lon=" + longitude + "&appid=" + apiKey + "&units=metric" + "&exclude=minutely,hourly";
 
         OkHttpClient client = new OkHttpClient();
@@ -173,6 +174,10 @@ public class MyViewPager2Adapter extends RecyclerView.Adapter<MyViewPager2Adapte
                         JSONObject weatherObject = weatherArray.getJSONObject(0);
                         String description = weatherObject.getString("description");
                         double temperature = currentWeather.getDouble("temp");
+                        int weatherId = weatherObject.getInt("id");  // Fetch the weather ID
+
+                        // Set the weather icon based on the ID
+                        String iconCode = getWeatherIconCode(weatherId);
 
                         JSONArray dailyArray = jsonObject.getJSONArray("daily");
                         JSONObject todayWeather = dailyArray.getJSONObject(0);
@@ -182,6 +187,7 @@ public class MyViewPager2Adapter extends RecyclerView.Adapter<MyViewPager2Adapte
 
                         ((Activity) context).runOnUiThread(() -> {
                             descriptionTextView.setText(description);
+                            weatherIconTextView.setText(iconCode);  // Set the icon
 
                             if (isCelsius) {
                                 temperatureTextView.setText(String.format("%d°C", Math.round(temperature)));
@@ -208,6 +214,25 @@ public class MyViewPager2Adapter extends RecyclerView.Adapter<MyViewPager2Adapte
         });
     }
 
+    private String getWeatherIconCode(int weatherId) {
+        if (weatherId >= 200 && weatherId <= 232) {
+            return "\u0046"; // ClimaconLightning
+        } else if (weatherId >= 300 && weatherId <= 321) {
+            return "\u0027"; // ClimaconRainAlt
+        } else if (weatherId >= 500 && weatherId <= 531) {
+            return "\u0024"; // ClimaconRain
+        } else if (weatherId >= 600 && weatherId <= 622) {
+            return "\u0057"; // ClimaconSnowflake
+        } else if (weatherId >= 701 && weatherId <= 781) {
+            return "\u003C"; // ClimaconFog
+        } else if (weatherId == 800) {
+            return "\u0049"; // ClimaconSun
+        } else if (weatherId >= 801 && weatherId <= 804) {
+            return "\u0021"; // ClimaconCloud
+        } else {
+            return "\u0049"; // Default to sun if unknown
+        }
+    }
     private void updateBackgroundColor(double temperature, ConstraintLayout layout) {
         // Define the temperature range and corresponding colors
         double minTemp;
@@ -346,4 +371,3 @@ public class MyViewPager2Adapter extends RecyclerView.Adapter<MyViewPager2Adapte
         }
     }
 }
-// on click F
