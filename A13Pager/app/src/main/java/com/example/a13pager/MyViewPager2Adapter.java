@@ -1,10 +1,12 @@
 package com.example.a13pager;
 import android.app.Activity;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -23,6 +25,9 @@ import okhttp3.Callback;
 import okhttp3.Response;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import org.json.JSONArray;
+
 
 public class MyViewPager2Adapter extends RecyclerView.Adapter<MyViewPager2Adapter.MyViewHolder>  {
     // Constructor of our ViewPager2Adapter class
@@ -54,7 +59,7 @@ public class MyViewPager2Adapter extends RecyclerView.Adapter<MyViewPager2Adapte
             properties.load(inputStream);
             String apiKey = properties.getProperty("api_key");
 
-            fetchCityName(zipCode, apiKey, holder.cv_city);
+            fetchCityName(zipCode, apiKey, holder.cv_city, holder.cv_cond);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -78,8 +83,8 @@ public class MyViewPager2Adapter extends RecyclerView.Adapter<MyViewPager2Adapte
         holder.cv_nextDay3TextView.setText(dayFormat.format(calendar.getTime()));
     }
 
-    private void fetchCityName(String zipCode, String apiKey, TextView textView) {
-        String apiUrl = "http://api.openweathermap.org/geo/1.0/zip?zip=" + zipCode + "&limit=5&appid=" + apiKey;
+    private void fetchCityName(String zipCode, String apiKey, TextView CityTextView, TextView descriptionTextView) {
+        String apiUrl = "https://api.openweathermap.org/geo/1.0/zip?zip=" + zipCode + "&limit=5&appid=" + apiKey;
 
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()
@@ -99,15 +104,64 @@ public class MyViewPager2Adapter extends RecyclerView.Adapter<MyViewPager2Adapte
                     try {
                         JSONObject jsonObject = new JSONObject(responseJson);
                         String cityName = jsonObject.getString("name");
-                        ((Activity) context).runOnUiThread(() -> textView.setText(cityName));
+                        double latitude = jsonObject.getDouble("lat");
+                        double longitude = jsonObject.getDouble("lon");
+
+                        // Log the fetched city name
+                        Log.d("CityName", "Fetched City: " + cityName);
+                        Log.d("APIResponse", "Response JSON: " + responseJson);
+
+                        fetchWeatherDescription(latitude, longitude, apiKey, descriptionTextView);
+
+                        ((Activity) context).runOnUiThread(() -> CityTextView.setText(cityName));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        Log.e("JSONError", "Error parsing JSON: " + e.getMessage());
+                    }
+                }
+            }
+        });
+    }
+
+    private void fetchWeatherDescription(double latitude, double longitude, String apiKey, TextView descriptionTextView) {
+        String apiUrl = "https://api.openweathermap.org/data/3.0/onecall?lat=" + latitude + "&lon=" + longitude + "&appid=" + apiKey + "&exclude=minutely,hourly";
+
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder()
+                .url(apiUrl)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                e.printStackTrace();
+                ((Activity) context).runOnUiThread(() -> {
+                    Toast.makeText(context, "Network error occurred", Toast.LENGTH_SHORT).show();
+                    Log.e("NetworkError", "Error: " + e.getMessage());
+                });
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    String responseJson = response.body().string();
+                    try {
+                        JSONObject jsonObject = new JSONObject(responseJson);
+                        JSONObject currentWeather = jsonObject.getJSONObject("current");
+                        JSONArray weatherArray = currentWeather.getJSONArray("weather");
+                        JSONObject weatherObject = weatherArray.getJSONObject(0);
+                        String description = weatherObject.getString("description");
+
+                        ((Activity) context).runOnUiThread(() -> descriptionTextView.setText(description));
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                 }
             }
         });
-
     }
+
+
 
 
 

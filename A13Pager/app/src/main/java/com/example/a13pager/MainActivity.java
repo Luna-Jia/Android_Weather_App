@@ -16,7 +16,7 @@ import com.tbuonomo.viewpagerdotsindicator.SpringDotsIndicator;
 public class MainActivity extends AppCompatActivity {
     // https://www.journaldev.com/26148/android-viewpager2
     private MyModel[] cv_pages = {
-            new MyModel("Ann Arbor", "Clear", android.R.color.holo_orange_light,"48195"),
+            new MyModel("Ann Arbor", "Clear", android.R.color.holo_orange_light,"48105"),
             new MyModel("Yuma", "Cloud", android.R.color.holo_green_light,"85364"),
             new MyModel("Orlando", "Rain", android.R.color.holo_blue_light,"32801"),
             new MyModel("Ypsilanti","Rain", android.R.color.holo_blue_light,"48197"),
