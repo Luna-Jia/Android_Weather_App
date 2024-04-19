@@ -63,7 +63,7 @@ public class MyViewPager2Adapter extends RecyclerView.Adapter<MyViewPager2Adapte
             properties.load(inputStream);
             String apiKey = properties.getProperty("api_key");
 
-            fetchCityName(zipCode, apiKey, holder.cv_city, holder.cv_cond,holder.cv_temperatureTextView, holder.cv_highTemperatureTextView,holder.cv_lowTemperatureTextView, holder.constraintlayout, holder.cv_weatherIcon);
+            fetchCityName(zipCode, apiKey, holder.cv_city, holder.cv_cond,holder.cv_temperatureTextView, holder.cv_highTemperatureTextView,holder.cv_lowTemperatureTextView, holder.constraintlayout, holder.cv_weatherIcon, holder.cv_weatherIcon1,holder.cv_weatherIcon2, holder.cv_weatherIcon3);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -76,6 +76,9 @@ public class MyViewPager2Adapter extends RecyclerView.Adapter<MyViewPager2Adapte
         holder.cv_highTemperatureTextView.setText(cv_models[position].mf_getHighTemp());
         holder.cv_lowTemperatureTextView.setText((cv_models[position].mf_getLowTemp()));
         holder.cv_weatherIcon.setText((cv_models[position].mf_getWeatherIcon0()));
+        holder.cv_weatherIcon.setText((cv_models[position].mf_getWeatherIcon1()));
+        holder.cv_weatherIcon.setText((cv_models[position].mf_getWeatherIcon2()));
+        holder.cv_weatherIcon.setText((cv_models[position].mf_getWeatherIcon3()));
         holder.cv_switchDegreeTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -105,7 +108,7 @@ public class MyViewPager2Adapter extends RecyclerView.Adapter<MyViewPager2Adapte
         holder.cv_nextDay3TextView.setText(dayFormat.format(calendar.getTime()));
     }
 
-    private void fetchCityName(String zipCode, String apiKey, TextView CityTextView, TextView descriptionTextView, TextView temperatureTextView, TextView highTemperatureTextView, TextView lowTemperatureTextView, ConstraintLayout constraintlayout, TextView weatherIcon0) {
+    private void fetchCityName(String zipCode, String apiKey, TextView CityTextView, TextView descriptionTextView, TextView temperatureTextView, TextView highTemperatureTextView, TextView lowTemperatureTextView, ConstraintLayout constraintlayout, TextView weatherIcon0, TextView weatherIcon1, TextView weatherIcon2, TextView weatherIcon3) {
         String apiUrl = "https://api.openweathermap.org/geo/1.0/zip?zip=" + zipCode + "&limit=5&appid=" + apiKey;
 
         OkHttpClient client = new OkHttpClient();
@@ -133,7 +136,7 @@ public class MyViewPager2Adapter extends RecyclerView.Adapter<MyViewPager2Adapte
                         Log.d("CityName", "Fetched City: " + cityName);
                         Log.d("APIResponse", "Response JSON: " + responseJson);
 
-                        fetchWeatherDescription(latitude, longitude, apiKey, descriptionTextView,temperatureTextView, highTemperatureTextView,lowTemperatureTextView, constraintlayout,weatherIcon0);
+                        fetchWeatherDescription(latitude, longitude, apiKey, descriptionTextView,temperatureTextView, highTemperatureTextView,lowTemperatureTextView, constraintlayout,weatherIcon0,weatherIcon1, weatherIcon2, weatherIcon3);
 
                         ((Activity) context).runOnUiThread(() -> CityTextView.setText(cityName));
                     } catch (JSONException e) {
@@ -145,7 +148,7 @@ public class MyViewPager2Adapter extends RecyclerView.Adapter<MyViewPager2Adapte
         });
     }
 
-    private void fetchWeatherDescription(double latitude, double longitude, String apiKey, TextView descriptionTextView, TextView temperatureTextView, TextView highTemperatureTextView, TextView lowTemperatureTextView, ConstraintLayout constraintlayout, TextView weatherIconTextView) {
+    private void fetchWeatherDescription(double latitude, double longitude, String apiKey, TextView descriptionTextView, TextView temperatureTextView, TextView highTemperatureTextView, TextView lowTemperatureTextView, ConstraintLayout constraintlayout, TextView weatherIconTextView, TextView weatherIconTextView1, TextView weatherIconTextView2, TextView weatherIconTextView3) {
         String apiUrl = "https://api.openweathermap.org/data/3.0/onecall?lat=" + latitude + "&lon=" + longitude + "&appid=" + apiKey + "&units=metric" + "&exclude=minutely,hourly";
 
         OkHttpClient client = new OkHttpClient();
@@ -181,13 +184,37 @@ public class MyViewPager2Adapter extends RecyclerView.Adapter<MyViewPager2Adapte
 
                         JSONArray dailyArray = jsonObject.getJSONArray("daily");
                         JSONObject todayWeather = dailyArray.getJSONObject(0);
+
                         JSONObject todayTemp = todayWeather.getJSONObject("temp");
                         double maxTemp = todayTemp.getDouble("max");
                         double minTemp = todayTemp.getDouble("min");
 
+                        JSONObject day1Weather = dailyArray.getJSONObject(1);
+                        JSONArray day1WeatherArray = day1Weather.getJSONArray("weather");
+                        JSONObject day1WeatherObject = day1WeatherArray.getJSONObject(0);
+                        int weatherId1 = day1WeatherObject.getInt("id");  // Fetch the weather ID
+                        String iconCode1 = getWeatherIconCode(weatherId1);
+
+                        JSONObject day2Weather = dailyArray.getJSONObject(2);
+                        JSONArray day2WeatherArray = day2Weather.getJSONArray("weather");
+                        JSONObject day2WeatherObject = day2WeatherArray.getJSONObject(0);
+                        int weatherId2 = day2WeatherObject.getInt("id");  // Fetch the weather ID
+                        String iconCode2 = getWeatherIconCode(weatherId2);
+
+                        JSONObject day3Weather = dailyArray.getJSONObject(3);
+                        JSONArray day3WeatherArray = day3Weather.getJSONArray("weather");
+                        JSONObject day3WeatherObject = day3WeatherArray.getJSONObject(0);
+                        int weatherId3 = day3WeatherObject.getInt("id");  // Fetch the weather ID
+                        String iconCode3 = getWeatherIconCode(weatherId3);
+
+
                         ((Activity) context).runOnUiThread(() -> {
                             descriptionTextView.setText(description);
                             weatherIconTextView.setText(iconCode);  // Set the icon
+                            weatherIconTextView1.setText(iconCode1);
+                            weatherIconTextView2.setText(iconCode2);
+                            weatherIconTextView3.setText(iconCode3);
+
 
                             if (isCelsius) {
                                 temperatureTextView.setText(String.format("%d°C", Math.round(temperature)));
@@ -344,9 +371,9 @@ public class MyViewPager2Adapter extends RecyclerView.Adapter<MyViewPager2Adapte
         TextView cv_nextDay1TextView;
         TextView cv_nextDay2TextView;
         TextView cv_nextDay3TextView;
-        TextView cv_nextDay1WeatherIconTextView;
-        TextView cv_nextDay2WeatherIconTextView;
-        TextView cv_nextDay3WeatherIconTextView;
+        TextView cv_weatherIcon1;
+        TextView cv_weatherIcon2;
+        TextView cv_weatherIcon3;
         TextView cv_switchDegreeTextView;
 
 
@@ -363,9 +390,9 @@ public class MyViewPager2Adapter extends RecyclerView.Adapter<MyViewPager2Adapte
             cv_nextDay1TextView = itemView.findViewById(R.id.nextDay1TextView);
             cv_nextDay2TextView = itemView.findViewById(R.id.nextDay2TextView);
             cv_nextDay3TextView = itemView.findViewById(R.id.nextDay3TextView);
-            cv_nextDay1WeatherIconTextView = itemView.findViewById(R.id.nextDay1WeatherIconTextView);
-            cv_nextDay2WeatherIconTextView = itemView.findViewById(R.id.nextDay2WeatherIconTextView);
-            cv_nextDay3WeatherIconTextView = itemView.findViewById(R.id.nextDay3WeatherIconTextView);
+            cv_weatherIcon1 = itemView.findViewById(R.id.nextDay1WeatherIconTextView);
+            cv_weatherIcon2 = itemView.findViewById(R.id.nextDay2WeatherIconTextView);
+            cv_weatherIcon3 = itemView.findViewById(R.id.nextDay3WeatherIconTextView);
             cv_switchDegreeTextView = itemView.findViewById(R.id.switchDegreeTextView);
 
         }
