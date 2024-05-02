@@ -5,4 +5,8 @@
 To set up, create ```raw/config.properties``` at here: 
 ```app/src/main/res/raw/config.properties```. Put your OpenWeatherMap API key inside ```config.properties```like the following:  ```api_key=xxxxxxxxxxxxxxxxxxx```
 
-![截屏2024-04-18 下午8 46 30](https://github.com/Luna-Jia/weatherApp2/assets/73403516/a23a7b2c-3cf0-4407-9d2b-a80801979bfa)
+!
+
+
+https://github.com/Luna-Jia/weatherApp2/assets/73403516/90244281-eb0f-479c-988c-b4020ce0e46f
+
